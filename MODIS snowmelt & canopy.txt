@@ -1,0 +1,675 @@
+'This Visual Basic program work in Excel to find the Thresholds of Snow Melt (1)
+'and Full Canopy (2).  The MODIS data extracted and analyzed with the ARCGIS models
+'are copy and pasted into the Excel Worksheets and the Visual Basic Program computes
+'the Thresholds.  In addition, the program checks the data for valid values before 
+'analysis is done. 
+
+'Call the following sub-routine to check data for valid values
+
+Sub valid()
+
+'Declare the variables
+
+Dim wb As Workbook
+Dim ws As Worksheet
+Dim myRngNDSI, myRngLST As Range
+Dim summerRngNDSI, summerRngLST As Range
+Dim Cell As Range
+Dim valid As Boolean
+Dim myNDSIMean, myNDSIStdDev, myLSTMean, myLSTStdDev As Double
+Dim summerNDSIMean, summerNDSIStdDev As Double
+Dim summerLAIMean, summerLAIStdDev As Double
+Dim NDSIThres, LSTThres As Double
+Dim myRow, myCol, myNDISRow, myLSTCol As Long
+Dim NDSI_data_rows, LST_data_rows As String
+Dim NDSI_summer_row, LST_summer_row As String
+Dim NDSI_Row, LST_Row As String
+Dim NDSI_Row_start, LST_Row_start, Row_Num As Integer
+Dim NDSI_R, LST_R As Integer
+Dim NDSI_R_S, LST_R_S As String
+
+'Start the counter
+
+Dim i As Integer
+
+'Set the workbook and sheet to the one in the open Excel sheet
+Set wb = ActiveWorkbook
+Set ws = ActiveSheet
+
+'Ask the operator how many rows of data to analyze
+Row_Num = InputBox(Prompt:="How many Rows of data are there?", Title:="?")
+
+'Ask the operator What Row does the NDSI data start in?
+NDSI_data_start = InputBox(Prompt:="What Row does the NDSI data start in?", Title:="4")
+
+'Since the LST data starts 2 rows beyond the end of the NDSI data the starting point is NDSI_data_start + Row_Num + 2
+LST_data_start = NDSI_data_start + Row_Num + 2
+
+
+'Loop counters
+
+NDSI_R = NDSI_data_start
+LST_R = LST_data_start
+
+
+'Start the Loop
+
+For i = 1 To Row_Num
+
+
+    'MsgBox "NDSI ROW NUMBER ", vbOKCancel, "NDSI_R ==>" + CStr(NDSI_R)
+    'MsgBox "LST ROW NUMBER ", vbOKCancel, "LST_R ==>" + CStr(LST_R)
+    
+    'turn the range into a string
+    NDSI_R_S = CStr(NDSI_R)
+    LST_R_S = CStr(LST_R)
+    
+    'set the range
+    NDSI_data_rows = "H" & NDSI_R_S & ":" & "BA" & NDSI_R_S
+    
+    LST_data_rows = "H" & LST_R_S & ":" & "BA" & LST_R_S
+    
+    
+    'Set the cell ranges to include the data in which we are interested
+    Set myRngNDSI = ws.Range(NDSI_data_rows)
+    Set myRngLST = ws.Range(LST_data_rows)
+    
+    'Set the cell ranges to include the data in for the summer dates for threshold
+    NDSI_summer_rows = "AD" & NDSI_R_S & ":" & "AM" & NDSI_R_S
+    LST_summer_rows = "AD" & LST_R_S & ":" & "AM" & LST_R_S
+    
+    
+    Set summerRngNDSI = ws.Range(NDSI_summer_rows)
+    Set summerRngLST = ws.Range(LST_summer_rows)
+    
+    'Calculate the mean and the standard deviation for each range of data sets
+    myNDSIMean = Application.WorksheetFunction.Average(myRngNDSI)
+    myNDSIStdDev = Application.WorksheetFunction.StDev(myRngNDSI)
+    myLSTMean = Application.WorksheetFunction.Average(myRngLST)
+    myLSTStdDev = Application.WorksheetFunction.StDev(myRngLST)
+    
+    'Calculate the mean and the standard deviation for each threshold for each data sets during the summer time june 26 - sept 6
+    summerNDSIMean = Application.WorksheetFunction.Average(summerRngNDSI)
+    summerNDSIStdDev = Application.WorksheetFunction.StDev(summerRngNDSI)
+    
+    'Compute the Threshold value from the summer mean and summer stdev for NDSI
+    NDSIThres = summerNDSIMean + summerNDSIStdDev
+
+    'Set the Row - which is the row where the date informationexists
+    myRow = 1
+  
+        'Cycle through each cell in the Range
+        For Each myCell In myRngNDSI
+            'This is an object reference - we need an object to be able to pass it to the validation function
+            Set Cell = Range(myCell.Address)
+                    
+                    valid = isValidDataPoint(Cell, myNDSIMean, myNDSIStdDev)
+                    If (valid) Then
+                        
+                        'Set the NDSIFlag to true because we found a valid value that meets threshold
+                        'NDSIFlag = True
+                        
+                        'MsgBox "NDSI_VALID", vbOKCancel, "NDSI VALID ==> " + CStr(myCell.Value)
+                Else
+                    myCell.Value = ""
+                End If
+        Next
+        'This is validation for the Land Surface Temp
+        'Check the values of LST to see if they are within 4 STDEV of the AVE and if they are out of range set them to blank
+        For Each myCell In myRngLST
+            Set Cell = Range(myCell.Address)
+                    
+                    valid = isValidDataPoint(Cell, myLSTMean, myLSTStdDev)
+                    If (valid) Then
+                 
+                        'LSTFlag = True
+                        
+                        'MsgBox "LST_VALID", vbOKCancel, "LST VALID ==> " + CStr(myCell.Value)
+                Else
+                    myCell.Value = ""
+                End If
+        Next
+ 
+    
+    'Increment the rows
+    NDSI_R = NDSI_R + 1
+    LST_R = LST_R + 1
+    
+    
+    'Set the flags (boolean values) to False
+    MasterFlag = False
+    NDSIFlag = False
+    LSTFlag = False
+
+
+
+Next i
+
+Call Valid_LAI(LST_data_start, Row_Num)
+
+End Sub
+
+'This is the subroutine that checks if the data is valid
+
+Sub Valid_LAI(LST_data_start, Row_Num)
+Dim wb As Workbook
+Dim ws As Worksheet
+Dim myRngLAI As Range
+Dim summerRngLAI As Range
+Dim Cell As Range
+Dim valid As Boolean
+Dim myLAIMean, myLAIStdDev As Double
+Dim summerLAIMean, summerLAIStdDev As Double
+Dim LAIThres As Double
+Dim myRow, myCol, myLAIRow As Long
+Dim MasterFlag, LAIFlag As Boolean
+Dim LAI_data_rows As String
+Dim LAI_summer_row As String
+Dim LAI_Row As String
+Dim LAI_Row_start As Integer
+Dim LAI_R As Integer
+Dim LAI_R_S As String
+
+Dim i As Integer
+
+
+'Set the flags (boolean values) to False
+MasterFlag = False
+LAIFlag = False
+
+
+Set wb = ActiveWorkbook
+Set ws = ActiveSheet
+
+
+'LAI_data_start
+LAI_data_start = LST_data_start + Row_Num + 2
+
+LAI_R = LAI_data_start
+
+'Start the Loop
+
+For i = 1 To Row_Num
+
+
+    'MsgBox "LAI ROW NUMBER ", vbOKCancel, "LAI_R ==>" + CStr(LAI_R)
+    'MsgBox "LST ROW NUMBER ", vbOKCancel, "LST_R ==>" + CStr(LST_R)
+    
+    LAI_R_S = CStr(LAI_R)
+   
+    
+    LAI_data_rows = "H" & LAI_R_S & ":" & "BA" & LAI_R_S
+    
+    'Set the cell ranges to include the data in which we are interested
+    Set myRngLAI = ws.Range(LAI_data_rows)
+    
+    
+    'Set the cell ranges to include the data in for the summer dates for threshold
+    LAI_summer_rows = "AD" & LAI_R_S & ":" & "AM" & LAI_R_S
+    
+    
+    
+    Set summerRngLAI = ws.Range(LAI_summer_rows)
+    
+    
+    'Calculate the mean and the standard deviation for each range of data sets
+    myLAIMean = Application.WorksheetFunction.Average(myRngLAI)
+    myLAIStdDev = Application.WorksheetFunction.StDev(myRngLAI)
+    
+    
+    'Calculate the mean and the standard deviation for each threshold for each data sets during the summer time june 26 - sept 6
+    summerLAIMean = Application.WorksheetFunction.Average(summerRngLAI)
+    summerLAIStdDev = Application.WorksheetFunction.StDev(summerRngLAI)
+    
+    'Compute the Threshold value from the summer mean and summer stdev for LAI
+    LAIThres = summerLAIMean + summerLAIStdDev
+
+    
+
+    'Set the Row - which is the row where the date informationexists
+    myRow = 1
+    
+        'Cycle through each cell in the Range
+        For Each myCell In myRngLAI
+            'This is an object reference - we need an object to be able to pass it to the validation function
+            Set Cell = Range(myCell.Address)
+                    
+                    valid = isValidDataPoint(Cell, myLAIMean, myLAIStdDev)
+                    If (valid) Then
+                        
+                        'Set the LAIFlag to true because we found a valid value that meets threshold
+                        'LAIFlag = True
+                        'Break out of the loop because we could be done with this Range if we find a good value in LST
+                        'MsgBox "LAI_VALID", vbOKCancel, "LAI VALID ==> " + CStr(myCell.Value)
+
+                Else
+                    myCell.Value = ""
+                End If
+        Next
+        
+        If (LAIFlag = True) Then
+            MasterFlag = True
+        End If
+   
+    
+    'Increment the rows
+    LAI_R = LAI_R + 1
+    
+
+
+Next i
+
+End Sub
+
+'This subroutine finds the thresholds
+
+Sub GetThreshold_1()
+Dim wb As Workbook
+Dim ws As Worksheet
+Dim myRngNDSI, myRngLST As Range
+Dim summerRngNDSI, summerRngLST As Range
+Dim Cell As Range
+Dim valid As Boolean
+Dim myNDSIMean, myNDSIStdDev, myLSTMean, myLSTStdDev As Double
+Dim summerNDSIMean, summerNDSIStdDev As Double
+Dim NDSIThres, LSTThres As Double
+Dim myRow, myCol, myNDISRow, myLSTCol As Long
+Dim MasterFlag, NDSIFlag, LSTFlag As Boolean
+Dim NDSI_data_rows, LST_data_rows As String
+Dim LST_Threshold_Cell As String
+Dim NDSI_summer_row, LST_summer_row As String
+Dim NDSI_Row, LST_Row As String
+Dim NDSI_Row_start, LST_Row_start, Row_Num As Integer
+Dim NDSI_R, LST_R As Integer
+Dim NDSI_R_S, LST_R_S As String
+Dim LST_Column_Letter As String
+Dim LST_Col_1, LST_Col_2 As Integer
+Dim LST_Thresh_Range As String
+
+Dim i As Integer
+
+'Set the flags (boolean values) to False
+MasterFlag = False
+NDSIFlag = False
+LSTFlag = False
+
+Set wb = ActiveWorkbook
+Set ws = ActiveSheet
+    
+'Ask the operator for the Temperature Theshold and put it on the sheet
+LSTThres = InputBox(Prompt:="What is the Temperature Threshold?", Title:="4")
+Cells(32, 5).Value = LSTThres
+
+'Ask the operator how many rows of data to analyze
+Row_Num = InputBox(Prompt:="How many Rows of data are there?", Title:="10")
+
+'Ask the operator What Row does the NDSI data start in?
+NDSI_data_start = InputBox(Prompt:="What Row does the NDSI data start in?", Title:="4")
+
+'Since the LST data starts 2 rows beyond the end of the NDSI data the starting point is NDSI_data_start + Row_Num + 2
+LST_data_start = NDSI_data_start + Row_Num + 2
+
+
+'Loop counters
+
+NDSI_R = NDSI_data_start
+LST_R = LST_data_start
+
+
+'Start the Loop
+
+For i = 1 To Row_Num
+    
+    NDSI_R_S = CStr(NDSI_R)
+    LST_R_S = CStr(LST_R)
+    
+    NDSI_data_rows = "H" & NDSI_R_S & ":" & "BA" & NDSI_R_S
+    
+    LST_data_rows = "H" & LST_R_S & ":" & "BA" & LST_R_S
+   
+    'Set the cell ranges to include the data in which we are interested
+    Set myRngNDSI = ws.Range(NDSI_data_rows)
+    Set myRngLST = ws.Range(LST_data_rows)
+    
+    'Set the cell ranges to include the data in for the summer dates for threshold
+    NDSI_summer_rows = "AD" & NDSI_R_S & ":" & "AM" & NDSI_R_S
+    LST_summer_rows = "AD" & LST_R_S & ":" & "AM" & LST_R_S
+    
+    Set summerRngNDSI = ws.Range(NDSI_summer_rows)
+    Set summerRngLST = ws.Range(LST_summer_rows)
+    
+    'MsgBox "NDSI_data_Rows", vbOKCancel, "NDSI DATA ROWS ==> " + NDSI_data_rows
+    
+    'Calculate the mean and the standard deviation for each range of data sets
+    myNDSIMean = Application.WorksheetFunction.Average(myRngNDSI)
+    myNDSIStdDev = Application.WorksheetFunction.StDev(myRngNDSI)
+    myLSTMean = Application.WorksheetFunction.Average(myRngLST)
+    myLSTStdDev = Application.WorksheetFunction.StDev(myRngLST)
+    
+    'Calculate the mean and the standard deviation for each threshold for each data sets during the summer time june 26 - sept 6
+    summerNDSIMean = Application.WorksheetFunction.Average(summerRngNDSI)
+    summerNDSIStdDev = Application.WorksheetFunction.StDev(summerRngNDSI)
+    
+    'Compute the Threshold value from the summer mean and summer stdev for NDSI
+    NDSIThres = summerNDSIMean + (3 * summerNDSIStdDev)
+
+    'loop through the data while the MasterFlag is False meaning that
+    'both the NDSI and the LST do not meet the established threshold.
+    'We'll loop through the NDSI data first and find the first value
+    'that meets the threshold.  We know the Date information
+    'for the data is in Row 1 - we really just need to find the Column
+    'information in order to find the corresponding date.
+    
+    'Set the Row - which is the row where the date informationexists
+    myRow = 1
+    
+    Do While MasterFlag = False
+        'Cycle through each cell in the Range
+        For Each myCell In myRngNDSI
+            'This is an object reference
+            'Set Cell = Range(myCell.Address)
+                'MsgBox "myCell", vbOKCancel, "myCell ==> " + CStr(myCell.Value) + "NDSI-Threshold ==>" + CStr(NDSIThres)
+                'Threshold value is set at the mean of the summer month NDSI + one Stdev check the first cell
+                    
+                
+                    
+                    
+                If myCell.Value <= (NDSIThres) Then
+                    'It's within the threshold
+                        'Get the column of the value that doesn't exceed threshold to find the corresponding date in row 8 of the worksheet
+                        myCol = myCell.Column
+                        'Record the column where we found the corresponding date
+                        myNDSICol = myCol
+                        'Set the NDSIFlag to true because we found a valid value that meets threshold
+                        NDSIFlag = True
+                            'Now set the column of the LST to check equal to the column that NDSI meets threshold
+                            myLSTCol = myNDSICol
+                            
+                            'Find the Column letter from the column number
+                            LST_Col_1 = Int(myLSTCol / 27)
+                            LST_Col_2 = myLSTCol - (LST_Col_1 * 26)
+                            If LST_Col_1 > 0 Then
+                                LST_Column_Letter = Chr(LST_Col_1 + 64)
+                            End If
+                            If LST_Col_2 > 0 Then
+                                LST_Column_Letter = LST_Colum_Letter & Chr(LST_Col_2 + 64)
+                            End If
+                            
+                            'Combine the Cell Column and Cell Row to get the LST Threshold Cell
+                            
+                            LST_Threshold_Cell = LST_Column_Letter & LST_R_S
+                            LST_Thresh_Range = LST_Threshold_Cell & ":" & LST_Threshold_Cell
+                            
+                            
+                            Set myRngLST = ws.Range(LST_Thresh_Range)
+                            
+                                For Each myCell2 In myRngLST
+                                        'Set myCell2 = myRngLST
+                                        
+                                        'MsgBox "NDSI_Row", vbOKCancel, "Row Number ==> " + CStr(NDSI_R)
+                                        'MsgBox "mycell2", vbOKCancel, "mycell2 ==> " + CStr(myCell2.Value) + "LST_Threshold_Value==>  " + CStr(LSTThres)
+                                            If myCell2.Value >= LSTThres Then
+                                                myLSTCol = myCell2.Column
+                                                'MsgBox "Threshold LST Met", vbOKCancel, "myLSTCol ==> " + CStr(myLSTCol)
+                                                'myLSTCol = myCol
+                                                LSTFlag = True
+                                                'MsgBox "LSTFlag", vbOKCancel, "LSTFlag ==> " + CStr(LSTFlag)
+                                            Else
+                                            'Keep going because threshold has not been met
+                                            Set myRngNDSI = ws.Range(myCell.Offset(0, 1).Address(False, False), "BB33")
+                                    
+                                            End If
+                                'Exit For
+                                Next myCell2
+                                'Exit For
+ 
+                    'Else
+                    'Keep going because value doesn't meet threshold
+                    End If
+ 
+       
+       
+        If (NDSIFlag = True And LSTFlag = True) Then
+            MasterFlag = True
+       Exit For
+        Else
+        
+        End If
+        
+        Next myCell
+        'Exit For
+    
+    Loop
+    
+    
+    'Finally get the date that comes later in the data set
+    'and write the date in E32 cell.
+    
+        Cells(160 + i, 4).Value = Cells(myRow, myNDSICol)
+        'MsgBox "THRESHOLD", vbOKCancel, "Threshold Met" + CStr(myNDSICol)
+  
+    
+    'Color the cell and 'add the update date so you know it's current.
+    Cells(160 + i, 4).Font.Color = vbRed
+    Cells(158, 4).Font.Color = vbBlue
+    Cells(158, 4).Value = Format(Now(), "dd/mm/yyyy hh:nn:ss AM/PM")
+    
+    'Increment the rows
+    NDSI_R = NDSI_R + 1
+    LST_R = LST_R + 1
+    
+    
+    'Set the flags (boolean values) to False
+    MasterFlag = False
+    NDSIFlag = False
+    LSTFlag = False
+
+
+Next i
+
+Call GetLAIThreshold(LST_data_start, Row_Num)
+
+End Sub
+
+Sub GetLAIThreshold(LST_data_start, Row_Num)
+Dim wb As Workbook
+Dim ws As Worksheet
+Dim myRngLAI As Range
+Dim summerRngLAI As Range
+Dim Cell As Range
+Dim valid As Boolean
+Dim myLAIMean, myLAIStdDev As Double
+Dim summerLAIMean, summerLAIStdDev As Double
+Dim LAIThres As Double
+Dim myRow, myCol, myLAIRow As Long
+Dim MasterFlag, LAIFlag As Boolean
+Dim LAI_data_rows  As String
+
+Dim LAI_summer_row, LST_summer_row As String
+Dim LAI_Row, LST_Row As String
+Dim LAI_Row_start, LST_Row_start As Integer
+Dim LAI_R, LST_R As Integer
+Dim LAI_R_S, LST_R_S As String
+
+
+Dim i As Integer
+
+'Set the flags (boolean values) to False
+MasterFlag = False
+LAIFlag = False
+
+
+Set wb = ActiveWorkbook
+Set ws = ActiveSheet
+    
+'Ask the operator for the Temperature Theshold and put it on the sheet
+'LSTThres = InputBox(Prompt:="What is the Temperature Threshold?", Title:="4")
+'Cells(32, 5).Value = LSTThres
+
+'Ask the operator how many rows of data to analyze
+'Row_Num = InputBox(Prompt:="How many Rows of data are there?", Title:="6")
+
+'Ask the operator What Row does the LAI data start in?
+'LAI_data_start = InputBox(Prompt:="What Row does the LST data start in?", Title:="35")
+LAI_data_start = LST_data_start + Row_Num + 2
+'Since the LST data starts 2 rows beyond the end of the LAI data the starting point is LAI_data_start + Row_Num + 2
+'LST_data_start = LAI_data_start + Row_Num + 2
+
+
+'Loop counters
+
+LAI_R = LAI_data_start
+
+
+
+'Start the Loop
+
+For i = 1 To Row_Num
+    
+    LAI_R_S = CStr(LAI_R)
+    
+    
+    LAI_data_rows = "H" & LAI_R_S & ":" & "BA" & LAI_R_S
+    
+    
+   
+    'Set the cell ranges to include the data in which we are interested
+    Set myRngLAI = ws.Range(LAI_data_rows)
+    
+    
+    'Set the cell ranges to include the data in for the summer dates for threshold
+    LAI_summer_rows = "AD" & LAI_R_S & ":" & "AM" & LAI_R_S
+   
+    
+    Set summerRngLAI = ws.Range(LAI_summer_rows)
+    
+    
+    'MsgBox "LAI_data_Rows", vbOKCancel, "LAI DATA ROWS ==> " + LAI_data_rows
+    
+    'Calculate the mean and the standard deviation for each range of data sets
+    myLAIMean = Application.WorksheetFunction.Average(myRngLAI)
+    myLAIStdDev = Application.WorksheetFunction.StDev(myRngLAI)
+    
+    
+    'Calculate the mean and the standard deviation for each threshold for each data sets during the summer time june 26 - sept 6
+    summerLAIMean = Application.WorksheetFunction.Average(summerRngLAI)
+    summerLAIStdDev = Application.WorksheetFunction.StDev(summerRngLAI)
+    
+    'Compute the Threshold value from the summer mean and summer stdev for LAI
+    LAIThres = summerLAIMean - (0.8 * summerLAIStdDev)
+    
+    'loop through the data while the MasterFlag is False meaning that
+    'both the LAI and the LST do not meet the established threshold.
+    'We'll loop through the LAI data first and find the first value
+    'that meets the threshold.  We know the Date information
+    'for the data is in Row 1 - we really just need to find the Column
+    'information in order to find the corresponding date.
+    
+    'Set the Row - which is the row where the date informationexists
+    myRow = 1
+    
+    Do While MasterFlag = False
+        'Cycle through each cell in the Range
+        For Each myCell In myRngLAI
+            'This is an object reference
+            'Set Cell = Range(myCell.Address)
+                'MsgBox "AVERAGE", vbOKCancel, "AVERAGE==> " + CStr(summerLAIMean) + "StDev ==>" + CStr(summerLAIStdDev)
+                'MsgBox "myCell", vbOKCancel, "myCell ==> " + CStr(myCell.Value) + "LAI-Threshold ==>" + CStr(LAIThres)
+                'Threshold value is set at the mean of the summer month LAI + one Stdev check the first cell
+                               
+                    
+                If myCell.Value >= (LAIThres) Then
+                    'It's within the threshold
+                        'Get the column of the value that doesn't exceed threshold to find the corresponding date in row 8 of the worksheet
+                        myCol = myCell.Column
+                        'Record the column where we found the corresponding date
+                        myLAICol = myCol
+                        'Set the LAIFlag to true because we found a valid value that meets threshold
+                        LAIFlag = True
+                            'Now set the column of the LST to check equal to the column that LAI meets threshold
+                            myLSTCol = myLAICol
+                            
+                            
+ 
+                    'Else
+                    'Keep going because value doesn't meet threshold
+                    End If
+ 
+       
+       
+        If (LAIFlag = True) Then
+            MasterFlag = True
+       Exit For
+        Else
+        
+        End If
+        
+        Next myCell
+        'Exit For
+    
+    Loop
+    
+    
+    'Finally get the date that comes later in the data set
+    'and write the date in E32 cell.
+    
+        Cells(160 + i, 5).Value = Cells(myRow, myLAICol)
+        'MsgBox "THRESHOLD", vbOKCancel, "Threshold Met" + CStr(myLAICol)
+  
+    
+    'Color the cell and 'add the update date so you know it's current.
+    Cells(160 + i, 5).Font.Color = vbBlue
+    Cells(160, 4).Font.Color = vbBlue
+    'Cells(33, 4).Value = Format(Now(), "dd/mm/yyyy hh:nn:ss AM/PM")
+    
+    'Increment the rows
+    LAI_R = LAI_R + 1
+    LST_R = LST_R + 1
+    
+    
+    'Set the flags (boolean values) to False
+    MasterFlag = False
+    LAIFlag = False
+    LSTFlag = False
+
+
+Next i
+
+End Sub
+
+
+Function isValidDataPoint(ByRef myCell As Range, ByVal myMean As Double, ByVal myStdDev As Double) As Boolean
+
+    Dim myRng As Range
+    Dim stdDev2 As Double
+    Dim sampleProximity As Double
+    Dim upperLimit, lowerLimit
+    
+    'This is a range with only one value but it gives us the ability
+    'to use methods of the Range object if we ned to in the future
+    Set myRng = Range(myCell.Address(False, False))
+    
+    'Basically sets the stdDevFactor to a factor of one.  So upperlimit and
+    'lowerlimit are plus or minus 4 standard deviations.  To change this
+    'we just have to multiple times whatever factor we want such as 2*(myStdDev)
+    stdDevFactor = (myStdDev)
+    upperLimit = (myMean) + 4 * stdDevFactor
+    lowerLimit = (myMean) - 4 * stdDevFactor
+    
+    For Each myCell In myRng
+       If (IsNumeric(myCell.Value)) Then
+            If ((myCell.Value) <= upperLimit) And ((myCell.Value) >= lowerLimit) Then
+                 'Debug Reporting
+                 'MsgBox "Value : " + myCell.Address(False, False) + " is within" + CStr(stdDevFactor) + ".", vbOKOnly, myCell.Value
+                 
+                 isValidDataPoint = True
+            Else
+                 'Debug Reporting
+                 'MsgBox "Value : " + myCell.Address(False, False) + " is NOT within" + CStr(stdDevFactor) + ".", vbOKOnly, myCell.Value
+                 
+                 isValidDataPoint = False
+            End If
+        End If
+    Next
+
+End Function
