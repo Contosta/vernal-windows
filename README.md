@@ -3,7 +3,7 @@ Detection of thresholds that mark the onset of spring, within weather, snow, ter
 
 Files in this repository:
 
-- <b>air_zero.R</b>: R script that identifies the date where the smoothed air temperature exceeds zero celcius
+- <b>air_zero.R</b>: R script that identifies the date where the smoothed air temperature exceeds zero celsius
 - <b>baseflow.R</b>: R script that identifies the date where the smoothed discharge reaches baseflow conditions
 - <b>MODIS data extraction.pdf</b>: schematics of ArcGIS models used to extract data from the MODIS dataset for subsequent calculation of snowmelt and canopy leaf-out thresholds.
 - <b>MODIS snowmelt & canopy.txt</b>: visual basic script that identifies the dates of snowmelt and canopy leaf-out, using data for New Hampshire extracted from the MODIS dataset
