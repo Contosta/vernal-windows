@@ -6,7 +6,7 @@
 # spring within weather, snow, terrestrial, and aquatic systems.
 
 # This script is written to analyze conductivity data and identifies two thresholds:
-# (1) local peak preceding and (2) local trough following the date of the onset of warming,
+# (1) local peak preceding and (2) local trough (or peak) following the date of the onset of warming,
 # which is detected previously using piecewise regression of the temperature at the same site
 
 # Developed as part of the analysis of the sensor datasets generated as part of 
