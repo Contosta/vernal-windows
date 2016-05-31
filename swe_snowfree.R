@@ -1,3 +1,6 @@
+# Calculates the threshold date of the end of snow melt,
+# defined here as the date where SWE drops to zero and does not exceed zero again
+
 # Script from Mark Green on opening netcdf files. Modified by Alden Adolph to open SNODAS files
 
 library(RNetCDF)
