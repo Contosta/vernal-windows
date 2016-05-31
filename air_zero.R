@@ -19,7 +19,7 @@
 
 #  1. Across 1000 iterations, vary the parameters that define the dataset for analysis: 
 #   - smooth the data using rollmedian, varying the size of the window for the median calculation 
-#   - vary the start date used to subset the data for analysis: February 15 plus or minus 15 days
+#   - vary the start date used to subset the data for analysis: January 15 plus or minus 15 days
 #   - vary the end date: May 15 plus or minus 15 days 
 
 #  2. For each iteration, calculate the day of year of the threshold
@@ -35,14 +35,12 @@
 #	2. temperature thresholds for the same set of site, previously calculated
 
 # Output:
-#	a csv file listing thresholds and confidence intervals for each site / data file
-#	thresholds printed to standard output, as they are calculated
+#	a csv file listing thresholds and confidence intervals for each site 
 
 #	
 #
 #######################################################################################################
-# Script adapted from Mark Green on opening netcdf files. Modified by Alden Adolph to open SNODAS files
-# 
+
 
 library(RNetCDF)
 library(rgdal)
