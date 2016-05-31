@@ -1,4 +1,48 @@
-# Script from Mark Green on opening netcdf files. Modified by Alden Adolph to open SNODAS files
+#######################################################################################################
+#
+#
+
+# One of several scripts used to identify the thresholds that mark the onset of 
+# spring within weather, snow, terrestrial, and aquatic systems.
+
+# This script is written to analyze air temperature data and determine the date at which
+# the smoothed temperature profile crosses from below 0 degrees C to above 0 degrees C
+# for the first time.
+
+
+# Developed as part of the analysis of the sensor datasets generated as part of 
+# research under the New Hampshire ESPCoR Ecosystems and Society grant.  
+# Code by A. Adolph with portion including import of netcdf data by Mark Green. 
+# See companion paper by Contosta et al (under review, 2016).
+
+# Use a Monte Carlo approach:
+
+#  1. Across 1000 iterations, vary the parameters that define the dataset for analysis: 
+#   - smooth the data using rollmedian, varying the size of the window for the median calculation 
+#   - vary the start date used to subset the data for analysis: February 15 plus or minus 15 days
+#   - vary the end date: May 15 plus or minus 15 days 
+
+#  2. For each iteration, calculate the day of year of the threshold
+
+#  3. The final threshold = the mode of the calculated thresholds for all 1000 iterations 
+
+#  4. Confidence intervals = the 2.5 and 97.5 exceedance values of the 1000 iterations
+
+# Data used in this sample script:
+#   1. instream conductivity data from the New Hampshire LoVoTECS network, available
+#   at the New Hampshire EPSCoR Data Discovery Center, downloaded to a local
+#   folder in the working directory
+#	2. temperature thresholds for the same set of site, previously calculated
+
+# Output:
+#	a csv file listing thresholds and confidence intervals for each site / data file
+#	thresholds printed to standard output, as they are calculated
+
+#	
+#
+#######################################################################################################
+# Script adapted from Mark Green on opening netcdf files. Modified by Alden Adolph to open SNODAS files
+# 
 
 library(RNetCDF)
 library(rgdal)
