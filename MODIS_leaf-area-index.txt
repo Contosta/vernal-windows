@@ -4,6 +4,9 @@
 'the Thresholds.  In addition, the program checks the data for valid values before 
 'analysis is done. 
 
+'See companion paper by Contosta et al (in review, 2016), which uses the date of canopy leafout (2), 
+'as calculated by this script from leaf area index (LAI).
+
 'Call the following sub-routine to check data for valid values
 
 Sub valid()
