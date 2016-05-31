@@ -3,15 +3,14 @@
 #
 
 # One of several scripts used to identify the thresholds that mark the onset of 
-# spring within climate, snow, terrestrial, and aquatic systems.
+# spring within weather, snow, terrestrial, and aquatic systems.
 
 # This script is written to analyze conductivity data and identifies two thresholds:
 # (1) peak and (2) trough closest to the temperature threshold
 
 # Developed as part of the analysis of the sensor datasets generated as part of 
 # research under the New Hampshire ESPCoR Ecosystems and Society grant. Code 
-# developed by A Contasta, A Adolph, M Green, and D Burchsted. See companion 
-# paper by Contasta et al 2016.
+# developed by M Green and A Contosta. See companion paper by Contosta et al (under review, 2016).
 
 # Use a Monte Carlo approach:
 
