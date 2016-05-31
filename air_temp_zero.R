@@ -12,7 +12,7 @@
 
 # Developed as part of the analysis of the sensor datasets generated as part of 
 # research under the New Hampshire ESPCoR Ecosystems and Society grant.  
-# Code by A. Adolph with portion including import of netcdf data by Mark Green. 
+# Code by A. Adolph with portion including import of netcdf data by M. Green. 
 # See companion paper by Contosta et al (under review, 2016).
 
 # Use a Monte Carlo approach:
