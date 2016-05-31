@@ -6,13 +6,13 @@
 # from mid-winter through mid-spring.
 
 # Developed as part of the analysis of the research under the New Hampshire ESPCoR Ecosystems and Society grant. 
-# Code developed by D Burchsted, A Contasta, A Adolph, and M Green. 
-# See companion paper by Contasta et al 2016.
+# Code developed by D Burchsted. Modified for additional use by A Contosta and A Adolph. 
+# See companion paper by Contosta et al (under review, 2016).
 # Date of most recent script draft: January 10, 2016.
 
-# This script was used for identification of the onset of warming in streams, rivers, and soils.
-# Below is a simplified version of the full script that was used, demonstrating the algorithms and functions.
-# The full scripts also looped through multiple sites and multiple years and created output files and plots.
+# This script is used to identify the onset of warming in sub-daily temperature time series data.
+# Below is a simplified version of the full script, demonstrating the algorithms and functions.
+# The full scripts also loops through multiple sites and multiple years and creates output files and plots.
 
 # Uses a Monte Carlo approach:
 
