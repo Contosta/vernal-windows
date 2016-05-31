@@ -10,7 +10,7 @@
 
 # Developed as part of the analysis of the sensor datasets generated as part of 
 # research under the New Hampshire ESPCoR Ecosystems and Society grant.  
-# Code by M Green. See companion paper by Contasta et al 2016.
+# Code by M Green. See companion paper by Contosta et al (under review, 2016).
 
 # Use a Monte Carlo approach:
 
