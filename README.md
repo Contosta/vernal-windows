@@ -1,5 +1,5 @@
 # vernal-windows
-This repository includes the algorithms used to identify the various thresholds that mark the onset of spring within weather, snow, terrestrial, and aquatic systems. The full vernal window is defined as the span between the earliest to the latest threshold date. Developed as part of the research under the New Hampshire ESPCoR Ecosystems and Society grant. See companion paper by Contasta et al 2016.
+This repository includes algorithms used to identify thresholds that occur during the vernal window,  which is a period that describes the end of of winter and the start of the growing season. The vernal window starts when air temperatures rise above zero degrees celcius and ends when forests leaf out and pastures, croplands, and lawns green up.  A series of dramatic transitions occurs within this window as the system crosses rapid thermodynamic and biogeochemical thresholds that drive energy, water, solute, and carbon flows.  Contosta et al. (2016) describe the sequence of thresholds that occur within the vernal window, lags between thresholds, and shifts in the timing of these lags given climate change.  This work was supported by the New Hampshire EPSCoR Ecosystem and Society Project (NSF-EPS 1101245).
 
 Files in this repository:
 
