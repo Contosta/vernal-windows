@@ -1,8 +1,33 @@
-# Calculates the threshold date of the end of snow melt,
+#######################################################################################################
+#
+#
+
+# One of several scripts used to identify the thresholds that mark the onset of 
+# spring within weather, snow, terrestrial, and aquatic systems.
+
+# This script is written to calculate the threshold date of the end of snow melt,
 # defined here as the date where SWE drops to zero and does not exceed zero again.
 # Also applied to snow depth in place of swe.
 
-# Script from Mark Green on opening netcdf files. Modified by Alden Adolph to open SNODAS files
+# Developed as part of the analysis of the sensor datasets generated as part of 
+# research under the New Hampshire ESPCoR Ecosystems and Society grant.  
+# Code by A. Adolph with portion including import of netcdf data by M. Green. 
+# See companion paper by Contosta et al (under review, 2016).
+
+# Input data required for script:
+#   1. NetCDF file from NOHRSC containing daily snow water equivalent
+#   2. Latitude and Longitude coordinates of site points
+#   OR (with data input modifications)
+#   1. Daily time series of snow depth and snow density from the CoCoRAHS dataset
+#      collected through the EPSCoR Program and available for download at the
+#      data discovery center online through the Univeristy of New Hampshire
+
+# Output:
+#   1. A .csv file listing thresholds for each site 
+#	
+#
+#######################################################################################################
+
 
 library(RNetCDF)
 library(rgdal)
