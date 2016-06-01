@@ -29,7 +29,7 @@
 #  4. Confidence intervals = the 2.5 and 97.5 exceedance values of the 1000 iterations
 
 # Input data required for script:
-#   1. instream conductivity data from the New Hampshire LoVoTECS network, available
+#   1. NetCDF file from NOHRSC containing daily gridded air temperature data
 #   2. Latitude and Longitude coordinates of site points
 #   OR
 #   1. Daily time series of air temperature downloaded from Global Historical Climate Network
@@ -37,7 +37,7 @@
 #
 
 # Output:
-#	  1. A .csv file listing thresholds and confidence intervals for each site 
+#   1. A .csv file listing thresholds and confidence intervals for each site 
 #   2. The threshodl results of 1000 iterations of the simulation for each site
 #	
 #
