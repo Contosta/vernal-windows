@@ -31,7 +31,7 @@
 # Input data required for script:
 #   1. NetCDF file from NOHRSC containing daily gridded air temperature data
 #   2. Latitude and Longitude coordinates of site points
-#   OR
+#   OR (with data input modifications)
 #   1. Daily time series of air temperature downloaded from Global Historical Climate Network
 #      at sites located near the CoCoRAHS observation locations
 #
