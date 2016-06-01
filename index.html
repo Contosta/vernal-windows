@@ -12,9 +12,9 @@
   <body>
     <section class="page-header">
       <h1 class="project-name">Vernal Windows Repository</h1>
-      <h2 class="project-tagline">Scripts used to detect thresholds that mark the onset of spring,
-      <p> applied to weather, soil, aquatic, and snow datasets.</h2></p>
-      <p>Companion paper by Contasta et al is under review.</p>
+      <h2 class="project-tagline">Scripts used to detect thresholds that mark the onset of spring,<br>
+      applied to weather, soil, aquatic, and snow datasets.</h2>
+      <p>Companion paper by Contosta et al is under review (2016).</p>
       <a href="https://github.com/dburchsted/vernal-windows" class="btn">View on GitHub</a>
       <a href="https://github.com/dburchsted/vernal-windows/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/dburchsted/vernal-windows/tarball/master" class="btn">Download .tar.gz</a>
@@ -24,31 +24,32 @@
       <h1>
 <a id="vernal-windows" class="anchor" href="#vernal-windows" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>vernal-windows</h1>
 
-<p>This repository includes the algorithms used to identify the various thresholds that mark the onset of spring within weather, snow, terrestrial, and aquatic systems. The full vernal window is defined as the span between the earliest to the latest threshold date. Developed as part of the research under the New Hampshire ESPCoR Ecosystems and Society grant. See companion paper by Contasta et al 2016.</p>
+<p>This repository includes the algorithms used to identify the various thresholds that mark the onset of spring within weather, snow, terrestrial, and aquatic systems. The full vernal window is defined as the span between the earliest to the latest threshold date. Developed as part of the research under the New Hampshire ESPCoR Ecosystems and Society grant. See companion paper by Contosta et al (in review, 2016).</p>
 
 <p>Files in this repository:</p>
 
 <ul>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/air_zero.R">air_zero.R</a></b>: R script that identifies the date where the smoothed air temperature exceeds zero celsius</li>
+<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/air_temp_zero.R">air_temp_zero.R</a></b>: R script that identifies the date where smoothed air temperature exceeds zero celsius</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/baseflow.R">baseflow.R</a></b>: R script that identifies the date where the smoothed discharge reaches baseflow conditions</li>
+<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/baseflow_peak.R">baseflow_peak.R</a></b>: R script that identifies the date where baseflow values of the smoothed data reach a peak. Applied to water discharge, instream nitrate concentrations, and instream FDOM.</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/MODIS-data_extraction.pdf">MODIS-data_extraction.pdf</a></b>: schematics of ArcGIS models used to extract data from the MODIS dataset for subsequent calculation of snowmelt and canopy leaf-out thresholds.</li>
+<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/MODIS_data-extraction.pdf">MODIS_data-extraction.pdf</a></b>: schematics of ArcGIS models used to extract data from the MODIS dataset for subsequent calculation of canopy leaf-out thresholds.</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/MODIS-snowmelt_and_canopy.txt">MODIS-snowmelt_canopy.txt</a></b>: visual basic script that identifies the dates of snowmelt and canopy leaf-out, using data for New Hampshire extracted from the MODIS dataset</li>
+<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/MODIS_leaf-area-index.txt">MODIS_leaf-area-index.txt</a></b>: visual basic script that identifies the date of canopy leaf-out, based on leaf area index (LAI) data for New Hampshire extracted from the MODIS dataset</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/peak_and_trough.R">peak_and_trough.R</a></b>: R script that identifies the dates instream and in soils where:
+<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/peak_and_trough.R">peak_and_trough.R</a></b>: R script that identifies the dates where:
 
 <ul>
-<li>smoothed conductivity values reach a maximum value, which occurs just prior to snowmelt</li>
-<li>smoothed conductivity values reach a minimum value, which occurs at peak springtime water level</li>
+<li>smoothed values reach a local peak prior to the onset of warming</li>
+<li>smoothed values reach a second local peak (replaced in some cases to find a local trough) after the onset of warming</li>
 </ul>
+Used for: instream specific conductance (peak then trough); soil specific conductance (two peaks), soil moisture (two peaks). 
 </li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/piecewise_regression.R">piecewise_regression.R</a></b>: R script that identifies the date that marks a distinct change in the time series. Applied to: onset of warming in soils, streams, and air; onset of change in snow water equivalent (SWE) values. Identifies the date correspoding to the breakpoint in a piecewise regression of the two best-fit lines of the smoothed time series</li>
+<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/piecewise_regression.R">piecewise_regression.R</a></b>: R script that identifies the date that marks a distinct change in the time series. Applied to: onset of warming in soils, streams, and air; onset of change in diel dissolved oxygen concentrations. Identifies the date correspoding to the breakpoint in a piecewise regression of the two best-fit lines of the smoothed time series</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/snowfree.R">snowfree.R</a></b>: R script that identifies the date of completion of snowmelt, defined as the date where the smoothed snow water equivalent (SWE) values drop to zero.</li>
+<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/snowfree.R">snowfree.R</a></b>: R script that identifies the date of completion of snowmelt, defined as the date where the smoothed snow water equivalent (SWE) values drop to zero and do not rise again later. Also run with snow depth replacing SWE.</li>
 </ul>
 
       <footer class="site-footer">
