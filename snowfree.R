@@ -3,7 +3,7 @@
 #
 
 # One of several scripts used to identify the thresholds that mark the onset of 
-# spring within weather, snow, terrestrial, and aquatic systems.
+# spring within climate, snow, terrestrial, and aquatic systems.
 
 # This script is written to calculate the threshold date of the end of snow melt,
 # defined here as the date where SWE drops to zero and does not exceed zero again.
