@@ -3,7 +3,7 @@
 #
 
 # One of several scripts used to identify the thresholds that mark the onset of 
-# spring within weather, snow, terrestrial, and aquatic systems.
+# spring within climate, snow, terrestrial, and aquatic systems.
 
 # This script is written to analyze air temperature data and determine the date at which
 # the smoothed temperature profile crosses from below 0 degrees C to above 0 degrees C
@@ -38,7 +38,7 @@
 
 # Output:
 #   1. A .csv file listing thresholds and confidence intervals for each site 
-#   2. The threshodl results of 1000 iterations of the simulation for each site
+#   2. The threshold results of 1000 iterations of the simulation for each site
 #	
 #
 #######################################################################################################
