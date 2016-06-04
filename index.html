@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Vernal-Windows Repository</title>
+    <title>Vernal-windows by Contosta</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,49 +11,46 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Vernal Windows Repository</h1>
-      <h2 class="project-tagline">Scripts used to detect thresholds that mark the onset of spring,<br>
-      applied to weather, soil, aquatic, and snow datasets.</h2>
-      <p>Companion paper by Contosta et al is under review (2016).</p>
-      <a href="https://github.com/dburchsted/vernal-windows" class="btn">View on GitHub</a>
-      <a href="https://github.com/dburchsted/vernal-windows/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/dburchsted/vernal-windows/tarball/master" class="btn">Download .tar.gz</a>
+      <h1 class="project-name">Vernal-windows</h1>
+      <h2 class="project-tagline">Scripts used to detect thresholds that mark the onset of spring; uses climate, snow, terrestrial, and aquatic datasets.</h2>
+      <a href="https://github.com/Contosta/vernal-windows" class="btn">View on GitHub</a>
+      <a href="https://github.com/Contosta/vernal-windows/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/Contosta/vernal-windows/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
     <section class="main-content">
       <h1>
 <a id="vernal-windows" class="anchor" href="#vernal-windows" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>vernal-windows</h1>
 
-<p>This repository includes the algorithms used to identify the various thresholds that mark the onset of spring within weather, snow, terrestrial, and aquatic systems. The full vernal window is defined as the span between the earliest to the latest threshold date. Developed as part of the research under the New Hampshire ESPCoR Ecosystems and Society grant. See companion paper by Contosta et al (in review, 2016).</p>
+<p>This repository includes algorithms used to identify thresholds that occur during the vernal window,  which is a period that describes the end of of winter and the start of the growing season. The vernal window starts when air temperatures rise above zero degrees celcius and ends when forests leaf out and pastures, croplands, and lawns green up.  A series of dramatic transitions occurs within this window as the system crosses rapid thermodynamic and biogeochemical thresholds that drive energy, water, solute, and carbon flows.  Contosta et al. (2016) describe the sequence of thresholds that occur within the vernal window, lags between thresholds, and shifts in the timing of these lags with climate change.  This paper is currently in review.  The research was supported by the New Hampshire EPSCoR Ecosystem and Society Project (NSF-EPS 1101245).</p>
 
 <p>Files in this repository:</p>
 
 <ul>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/air_temp_zero.R">air_temp_zero.R</a></b>: R script that identifies the date where smoothed air temperature exceeds zero celsius</li>
+<b>air_zero.R</b>: R script that identifies the date where the smoothed air temperature exceeds zero celsius</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/baseflow_peak.R">baseflow_peak.R</a></b>: R script that identifies the date where baseflow values of the smoothed data reach a peak. Applied to water discharge, instream nitrate concentrations, and instream FDOM.</li>
+<b>baseflow.R</b>: R script that identifies the date where the smoothed discharge reaches baseflow conditions</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/MODIS_data-extraction.pdf">MODIS_data-extraction.pdf</a></b>: schematics of ArcGIS models used to extract data from the MODIS dataset for subsequent calculation of canopy leaf-out thresholds.</li>
+<b>MODIS data extraction.pdf</b>: schematics of ArcGIS models used to extract data from the MODIS dataset for subsequent calculation of snowmelt and canopy leaf-out thresholds.</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/MODIS_leaf-area-index.txt">MODIS_leaf-area-index.txt</a></b>: visual basic script that identifies the date of canopy leaf-out, based on leaf area index (LAI) data for New Hampshire extracted from the MODIS dataset</li>
+<b>MODIS snowmelt &amp; canopy.txt</b>: visual basic script that identifies the dates of snowmelt and canopy leaf-out, using data for New Hampshire extracted from the MODIS dataset</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/peak_and_trough.R">peak_and_trough.R</a></b>: R script that identifies the dates where:
+<b>peak &amp; trough.R</b>: R script that identifies the dates instream and in soils where:
 
 <ul>
-<li>smoothed values reach a local peak prior to the onset of warming</li>
-<li>smoothed values reach a second local peak (replaced in some cases to find a local trough) after the onset of warming</li>
+<li>smoothed conductivity values reach a maximum value, which occurs just prior to snowmelt</li>
+<li>smoothed conductivity values reach a minimum value, which occurs at peak springtime water level</li>
 </ul>
-Used for: instream specific conductance (peak then trough); soil specific conductance (two peaks), soil moisture (two peaks). 
 </li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/piecewise_regression.R">piecewise_regression.R</a></b>: R script that identifies the date that marks a distinct change in the time series. Applied to: onset of warming in soils, streams, and air; onset of change in diel dissolved oxygen concentrations. Identifies the date correspoding to the breakpoint in a piecewise regression of the two best-fit lines of the smoothed time series</li>
+<b>piecewise regression.R</b>: R script that identifies the date that marks the onset of warming in soils and streams, by identifying the date correspoding to the breakpoint in a piecewise regression of the two best-fit lines of the smoothed temperature time series</li>
 <li>
-<b><a href="https://github.com/dburchsted/vernal-windows/blob/master/snowfree.R">snowfree.R</a></b>: R script that identifies the date of completion of snowmelt, defined as the date where the smoothed snow water equivalent (SWE) values drop to zero and do not rise again later. Also run with snow depth replacing SWE.</li>
+<b>snowfree.R</b>: R script that identifies the date of completion of snowmelt, defined as the date where the smoothed snow water equivalent (SWE) values drop to zero.</li>
 </ul>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/dburchsted/vernal-windows">Vernal-windows</a> is maintained by <a href="https://github.com/dburchsted">dburchsted</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/Contosta/vernal-windows">Vernal-windows</a> is maintained by <a href="https://github.com/Contosta">Contosta</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
